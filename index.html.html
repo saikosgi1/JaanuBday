@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Birthday Celebration Surprise</title>
+  <style>
+    :root{
+      --pink:#ff8fb3;--purple:#b388ff;--gold:#ffd166;--blue:#89d8ff;--white:#fff;--dark:#3a2d4d;
+      --glass:rgba(255,255,255,.22);--glass2:rgba(255,255,255,.35);--shadow:0 22px 70px rgba(58,45,77,.25);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--white);overflow:hidden;background:#20152f}
+    body:before{content:"";position:fixed;inset:0;background:
+      radial-gradient(circle at 15% 20%,rgba(255,143,179,.55),transparent 28%),
+      radial-gradient(circle at 82% 15%,rgba(137,216,255,.45),transparent 30%),
+      radial-gradient(circle at 50% 85%,rgba(255,209,102,.35),transparent 32%),
+      linear-gradient(135deg,#2b1846,#57357c 45%,#174f78);z-index:-4}
+    .loading{position:fixed;inset:0;display:grid;place-items:center;background:linear-gradient(135deg,#2b1846,#ff8fb3);z-index:50;transition:opacity .8s,visibility .8s}
+    .loading.hide{opacity:0;visibility:hidden}.loader{text-align:center}.spinner{width:78px;height:78px;border:6px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;margin:auto auto 18px}@keyframes spin{to{transform:rotate(360deg)}}
+    .app{height:100vh;position:relative}.page{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:86px 18px 94px;opacity:0;transform:translateX(60px) scale(.98);pointer-events:none;transition:.7s cubic-bezier(.2,.8,.2,1)}
+    .page.active{opacity:1;transform:translateX(0) scale(1);pointer-events:auto}.page.prev{transform:translateX(-60px) scale(.98)}
+    .card{width:min(1000px,100%);max-height:calc(100vh - 180px);overflow:auto;text-align:center;padding:34px;border:1px solid rgba(255,255,255,.32);background:linear-gradient(135deg,rgba(255,255,255,.24),rgba(255,255,255,.10));box-shadow:var(--shadow);border-radius:32px;backdrop-filter:blur(18px)}
+    h1{font-size:clamp(2.6rem,8vw,6.2rem);line-height:1.02;text-shadow:0 8px 28px rgba(0,0,0,.22)}h2{font-size:clamp(1.9rem,5vw,3.3rem);margin-bottom:18px}.lead{font-size:clamp(1.1rem,2.5vw,1.55rem);line-height:1.65;max-width:760px;margin:18px auto;color:rgba(255,255,255,.94)}
+    button{border:0;border-radius:999px;padding:15px 26px;font-weight:800;font-size:1rem;cursor:pointer;color:#3a2d4d;background:linear-gradient(135deg,#fff,#ffd166);box-shadow:0 12px 35px rgba(255,209,102,.28);transition:.25s}button:hover{transform:translateY(-3px) scale(1.02)}button.secondary{background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.35)}
+    .nav{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);display:flex;gap:12px;z-index:20;align-items:center}.progress{position:fixed;top:18px;left:50%;transform:translateX(-50%);display:flex;gap:9px;z-index:20}.dot{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.35);transition:.3s}.dot.active{width:35px;border-radius:20px;background:#ffd166}
+    .balloon{position:fixed;width:48px;height:60px;border-radius:50% 50% 45% 45%;opacity:.85;animation:floatUp linear infinite;z-index:-1}.balloon:after{content:"";position:absolute;left:50%;top:58px;width:1px;height:70px;background:rgba(255,255,255,.45)}@keyframes floatUp{from{transform:translateY(110vh) rotate(0)}to{transform:translateY(-150px) rotate(18deg)}}
+    .confetti{position:fixed;width:10px;height:16px;top:-20px;z-index:30;animation:fall 3s linear forwards}@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+    .sparkle,.heart{position:fixed;pointer-events:none;z-index:-1;animation:drift 6s ease-in-out infinite;color:#fff}.heart{color:#ffb3c9}@keyframes drift{0%,100%{transform:translateY(0) scale(.8);opacity:.45}50%{transform:translateY(-28px) scale(1.15);opacity:1}}
+    .typing{min-height:210px;font-size:clamp(1.08rem,2.35vw,1.55rem);line-height:1.75;white-space:pre-wrap;text-align:left;max-width:820px;margin:0 auto}.cursor{display:inline-block;width:3px;height:1.2em;background:#ffd166;vertical-align:middle;animation:blink .75s step-end infinite}@keyframes blink{50%{opacity:0}}
+    .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.photo{height:185px;border-radius:24px;overflow:hidden;cursor:pointer;box-shadow:0 15px 40px rgba(0,0,0,.18);transition:.3s}.photo:hover{transform:translateY(-7px) scale(1.02)}.photo img{width:100%;height:100%;object-fit:cover;display:block}
+    .lightbox{position:fixed;inset:0;background:rgba(20,12,32,.82);z-index:40;display:none;align-items:center;justify-content:center;padding:22px}.lightbox.show{display:flex}.lightbox img{max-width:92vw;max-height:78vh;border-radius:26px;box-shadow:var(--shadow)}.close{position:absolute;top:22px;right:24px}
+    .timeline{text-align:left;max-width:760px;margin:auto;position:relative}.timeline:before{content:"";position:absolute;left:18px;top:0;bottom:0;width:3px;background:linear-gradient(#ffd166,#ff8fb3,#89d8ff)}.memory{margin:0 0 20px 54px;padding:18px 20px;border-radius:22px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);opacity:0;transform:translateY(20px);transition:.7s}.memory.show{opacity:1;transform:translateY(0)}.memory:before{content:"✦";position:absolute;left:6px;color:#ffd166;font-size:24px}
+    .wishes{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.flip{height:310px;perspective:1000px}.flip-inner{position:relative;width:100%;height:100%;transition:transform .75s;transform-style:preserve-3d}.flip:hover .flip-inner{transform:rotateY(180deg)}.front,.back{position:absolute;inset:0;display:grid;place-items:center;padding:18px;border-radius:25px;backface-visibility:hidden;background:rgba(255,255,255,.20);border:1px solid rgba(255,255,255,.28);box-shadow:0 12px 36px rgba(0,0,0,.15)}.front{font-size:2.8rem;overflow:hidden}.front img{width:100%;height:100%;object-fit:cover;border-radius:25px;display:block}.back{transform:rotateY(180deg);font-size:.95rem;line-height:1.48;text-align:left;overflow:auto;white-space:pre-line}.flip.tap .flip-inner{transform:rotateY(180deg)}
+    .gift{font-size:5rem;cursor:pointer;display:inline-block;animation:bounce 1.5s infinite}.gift.open{animation:none;transform:scale(1.15) rotate(-8deg)}@keyframes bounce{50%{transform:translateY(-12px)}}
+    .cake{position:relative;width:250px;height:170px;margin:28px auto}.layer{position:absolute;left:25px;width:200px;height:55px;border-radius:18px;background:linear-gradient(135deg,#ff8fb3,#ffd1dc);box-shadow:inset 0 -12px rgba(0,0,0,.08)}.l1{bottom:0}.l2{bottom:50px;width:170px;left:40px;background:linear-gradient(135deg,#b388ff,#e5d4ff)}.l3{bottom:98px;width:130px;left:60px;background:linear-gradient(135deg,#ffd166,#fff0b8)}.candle{position:absolute;bottom:145px;width:12px;height:42px;border-radius:8px;background:#fff}.c1{left:91px}.c2{left:120px}.c3{left:149px}.flame{position:absolute;top:-19px;left:-4px;width:20px;height:24px;background:radial-gradient(circle,#fff 5%,#ffd166 35%,#ff7a59 70%);border-radius:50% 50% 50% 0;transform:rotate(-45deg);animation:flicker .5s infinite alternate;filter:drop-shadow(0 0 12px #ffd166)}@keyframes flicker{to{transform:rotate(-35deg) scale(1.1)}}
+    .firework{position:fixed;width:7px;height:7px;border-radius:50%;z-index:25;animation:explode 1.2s ease-out forwards}@keyframes explode{to{transform:translate(var(--x),var(--y)) scale(.2);opacity:0}}
+    .tiny{font-size:.92rem;color:rgba(255,255,255,.8);margin-top:14px}.hidden{display:none!important}
+    @media(max-width:760px){.card{padding:24px;border-radius:24px}.gallery,.wishes{grid-template-columns:1fr}.flip{height:360px}.photo{height:160px}.nav{width:100%;justify-content:center;bottom:12px}.page{padding:72px 12px 86px}.typing{text-align:center}.timeline:before{left:10px}.memory{margin-left:35px}.cake{transform:scale(.85);margin:12px auto}}
+  </style>
+</head>
+<body>
+  <div class="loading" id="loading"><div class="loader"><div class="spinner"></div><h2>Preparing your surprise...</h2></div></div>
+  <div class="progress" id="progress"></div>
+  <div id="balloons"></div><div id="effects"></div>
+  <main class="app" id="app">
+    <section class="page active" data-title="Welcome"><div class="card"><h1>Welcome!</h1><p class="lead">A special surprise awaits you...</p><button onclick="goNext(true)">Start the Celebration</button><p class="tiny">Tap the button and enjoy every moment ✨</p></div></section>
+    <section class="page" data-title="Message"><div class="card"><h2>For Someone Special 💖</h2><div class="typing" id="typing"></div><span class="cursor"></span></div></section>
+    <section class="page" data-title="Gallery"><div class="card"><h2>Beautiful Moments 📸</h2><p class="lead">On your special day, we offered Annadanam to homeless people and fed stray animals in your honor. May every blessing, every heartfelt prayer, and every silent smile from those we helped always stay with you, bringing you happiness, peace, good health, and endless joy. ❤️<br><br>Click any photo to view it larger.</p><div class="gallery" id="gallery"></div></div></section>
+    <section class="page" data-title="Timeline"><div class="card"><h2>Memory Timeline ✨</h2><div class="timeline" id="timeline">
+      <div class="memory"><h3>The first unforgettable smile</h3><p>I still remember the very first time I saw you in our Cyber Security class. That was where it all began our first meeting, the smiles we exchanged, the little laughs we shared. Out of everything from that day, the one thing that has stayed with me is your beautiful smile. Somehow, that moment has never left my heart.</p></div>
+      <div class="memory"><h3>The laughter we still remember</h3><p>From the silly jokes we shared in class to the endless laughter during our video calls, every moment became a memory I'll always treasure. Those days were filled with happiness, warmth, and feelings I'll never forget. No matter where life takes us, those beautiful moments will always have a special place in my heart.</p></div>
+      <div class="memory"><h3>The little wins</h3><p>Your little wins may seem small to the world, but they're truly inspiring to me. Every single day, you face life's challenges with your head held high, never giving up no matter what comes your way. That quiet strength, resilience, and determination are what make you even more beautiful not just on the outside, but as a person. Keep shining, because that's what makes you truly awesome.</p></div>
+      <div class="memory"><h3>Today’s special chapter</h3><p>If there's one thing I wish you could see through my eyes, it's how incredibly special you are. Your smile has become one of my favorite reasons to believe that even ordinary days can feel beautiful. Every conversation, every laugh, and every memory with you has quietly found a place in my heart.
+
+I don't know what the future holds, but I do know this: you've made my world a little brighter just by being yourself. Thank you for being the wonderful person you are. I hope life always gives you countless reasons to smile, because you deserve nothing less.
+
+One wish I keep quietly in my heart is that, someday, you'll realize how deeply you are admired and appreciated. Until then, I'll always be grateful for every moment and every memory we've shared. ❤️</p></div>
+    </div></div></section>
+    <section class="page" data-title="Wishes"><div class="card"><h2>Birthday Wishes 🎁</h2><p class="lead">Hover or tap the cards.</p><div class="wishes">
+      <div class="flip"><div class="flip-inner"><div class="front"><img src="https://i.postimg.cc/sfJ1nFZN/IMG-5377.jpg" alt="Photo 3">
+</div><div class="back">Hi Jaanu, I'm little Deepu. ❤️
+
+I may be small, but I know one secret. Adult Deepu smiles a little differently whenever he talks about you. He says your smile is beautiful, your heart is kind, and your presence feels very special.
+
+He loves you the most, and your happiness means so much to him. So keep smiling always, because your smile is his favorite. ❤️</div></div></div>
+      <div class="flip"><div class="flip-inner"><div class="front"><img src="https://i.postimg.cc/QNqV6LTG/36273e00-f466-4b4f-a90f-9dcb585c8410.jpg" alt="Photo 3"></div><div class="back">Hi, I'm Sai Deepu's elder brother. ❤️
+
+I wanted to tell you something from my heart. You already feel like someone special to us, not because of anything else, but because of the warmth, kindness, and beautiful energy you carry.
+
+We are quietly waiting for the day you say yes to him. I truly believe he will love you with honesty, respect you deeply, and stand by your side through every joy and every challenge.
+
+If that day comes, it will not only make him happy, it will make our family feel complete. Until then, please know that you will always be welcomed with love, respect, and open hearts. ❤️</div></div></div>
+      <div class="flip"><div class="flip-inner"><div class="front"><img src="https://i.postimg.cc/v8vDPRVR/1216981b-3e30-4177-82bf-246f87e8eb63.jpg" alt="Photo 3"></div><div class="back">Hi, we are Deepu's mom and dad. We wanted to say something from our hearts.
+
+Even though we have not known you closely for a long time, you already feel very special to us. You are not just someone in Deepu's life; you are someone we would happily welcome into our hearts.
+
+To us, you will never be treated like a daughter-in-law. You will always be more than a daughter, a blessing, and a beautiful part of our family. Our home, our love, and our blessings will always be open for you.
+
+We pray that your life is filled with happiness, good health, peace, love, and endless smiles. May God always protect you and keep you surrounded with joy. ❤️</div></div></div>
+    </div><button style="margin-top:22px" onclick="toggleMusic()" id="musicBtn">Play Music</button><div><span class="gift" id="gift" onclick="openGift()">🎁</span></div><p id="giftMsg" class="lead hidden">Surprise! You are loved more than words can say. Keep smiling always. 💫</p></div></section>
+    <section class="page" data-title="Celebrate"><div class="card"><h1>Happy Birthday!</h1><p class="lead">Wishing you a day full of smiles, magic, love, and beautiful memories.</p><div class="cake"><div class="layer l1"></div><div class="layer l2"></div><div class="layer l3"></div><div class="candle c1"><div class="flame"></div></div><div class="candle c2"><div class="flame"></div></div><div class="candle c3"><div class="flame"></div></div></div><button onclick="replay()">Replay Celebration</button></div></section>
+  </main>
+  <div class="nav"><button class="secondary" onclick="goBack()">Back</button><button onclick="goNext(true)">Next</button></div>
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()"><button class="close secondary">Close</button><img id="lightboxImg" alt="Birthday memory" /></div>
+  <script>
+    // PERSONALIZE HERE
+    const recipientName = "My dear Jaanuuuu";
+    const birthdayMessage = `Happy Birthday, ${recipientName}!\n\nMeeting you has been one of the sweetest parts of my life. Whether you know it or not, you have inspired smiles, hope, and happiness in ways you may never fully realize.\n\nMy only wish today is that you always have a reason to smile, because seeing you happy feels like a gift by itself. You deserve peace, love, success, good health, and every beautiful thing your heart is waiting for.\n\nHappy Birthday ra karroda. I hope this year brings you everything you have ever wished for and so much more. ❤️🎂🎉`;
+    const galleryImages = [
+      "https://media.thaagam.org/media/uploads/21-06-2026/stray_dog/NQGM/274F6N/274F6N-15-50-1_20260627_094902_242036.webp?t=1782533942",
+      "https://media.thaagam.org/media/creatives_deliverables/creatives_deliverables/2026/6/WCRRCL/2.jpg",
+      "https://media.thaagam.org/media/creatives_deliverables/creatives_deliverables/2026/6/WCRRCL/1.jpg",
+      "https://media.thaagam.org/media/uploads/21-06-2026/homeless/MAE1/WCRRCL/WCRRCL-20-100-1_20260627_110913_158210.webp?t=1782538753",
+      "https://media.thaagam.org/media/creatives_deliverables/WCRRCL/Collage_Image/Collage_WCRRCL_1782552930.jpg",
+      "https://media.thaagam.org/media/creatives_deliverables/274F6N/Collage_Image/Collage_274F6N_1782743169.jpg"
+    ];
+
+    let current = 0, typed = false, musicPlaying = false, audioCtx, osc, gain;
+    const pages = [...document.querySelectorAll('.page')];
+    const progress = document.getElementById('progress');
+    pages.forEach((_,i)=>{const d=document.createElement('div');d.className='dot'+(i===0?' active':'');progress.appendChild(d)});
+    const dots=[...document.querySelectorAll('.dot')];
+    window.addEventListener('load',()=>setTimeout(()=>document.getElementById('loading').classList.add('hide'),850));
+
+    function render(){pages.forEach((p,i)=>{p.classList.toggle('active',i===current);p.classList.toggle('prev',i<current)});dots.forEach((d,i)=>d.classList.toggle('active',i===current));if(current===1&&!typed) typeMessage(); if(current===3) revealMemories(); if(current===5){confettiBurst();fireworks();}}
+    function goNext(pop=false){if(pop) confettiBurst(35); current = Math.min(current+1,pages.length-1); render()}
+    function goBack(){current = Math.max(current-1,0); render()}
+    function replay(){current=0;typed=false;document.getElementById('typing').textContent='';render();setTimeout(()=>confettiBurst(80),300)}
+
+    function typeMessage(){typed=true;const el=document.getElementById('typing');let i=0;function tick(){el.textContent=birthdayMessage.slice(0,i++);if(i<=birthdayMessage.length)setTimeout(tick,28)}tick()}
+    function revealMemories(){document.querySelectorAll('.memory').forEach((m,i)=>setTimeout(()=>m.classList.add('show'),i*220))}
+
+    function createBalloons(){const colors=['#ff8fb3','#b388ff','#ffd166','#89d8ff','#ffffff'];for(let i=0;i<22;i++){const b=document.createElement('div');b.className='balloon';b.style.left=Math.random()*100+'vw';b.style.background=colors[i%colors.length];b.style.animationDuration=9+Math.random()*10+'s';b.style.animationDelay=-Math.random()*12+'s';document.body.appendChild(b)}}createBalloons();
+    function ambient(){for(let i=0;i<18;i++){const s=document.createElement('div');s.className=i%2?'sparkle':'heart';s.textContent=i%2?'✦':'♥';s.style.left=Math.random()*100+'vw';s.style.top=Math.random()*100+'vh';s.style.animationDelay=Math.random()*5+'s';s.style.fontSize=14+Math.random()*20+'px';document.body.appendChild(s)}}ambient();
+    function confettiBurst(count=70){const colors=['#ff8fb3','#b388ff','#ffd166','#89d8ff','#fff'];for(let i=0;i<count;i++){const c=document.createElement('div');c.className='confetti';c.style.left=Math.random()*100+'vw';c.style.background=colors[Math.floor(Math.random()*colors.length)];c.style.animationDuration=2+Math.random()*2+'s';document.body.appendChild(c);setTimeout(()=>c.remove(),4200)}}
+    function fireworks(){for(let n=0;n<6;n++){setTimeout(()=>{const x=15+Math.random()*70,y=15+Math.random()*45;for(let i=0;i<34;i++){const f=document.createElement('div');f.className='firework';f.style.left=x+'vw';f.style.top=y+'vh';f.style.background=['#ff8fb3','#ffd166','#89d8ff','#fff'][i%4];const a=(Math.PI*2*i)/34,r=80+Math.random()*80;f.style.setProperty('--x',Math.cos(a)*r+'px');f.style.setProperty('--y',Math.sin(a)*r+'px');document.body.appendChild(f);setTimeout(()=>f.remove(),1300)}},n*450)}}
+    function renderGallery(){const g=document.getElementById('gallery');galleryImages.forEach(src=>{const d=document.createElement('div');d.className='photo';d.innerHTML=`<img src="${src}" alt="Birthday photo">`;d.onclick=()=>openLightbox(src);g.appendChild(d)})}renderGallery();
+    function openLightbox(src){document.getElementById('lightboxImg').src=src;document.getElementById('lightbox').classList.add('show')}
+    function closeLightbox(){document.getElementById('lightbox').classList.remove('show')}
+    function openGift(){document.getElementById('gift').classList.add('open');document.getElementById('giftMsg').classList.remove('hidden');confettiBurst(45)}
+    function toggleMusic(){const btn=document.getElementById('musicBtn');if(!audioCtx){audioCtx=new (window.AudioContext||window.webkitAudioContext)();gain=audioCtx.createGain();gain.gain.value=.045;gain.connect(audioCtx.destination)} if(!musicPlaying){musicPlaying=true;btn.textContent='Pause Music';playMelody()}else{musicPlaying=false;btn.textContent='Play Music'; if(osc) osc.stop();}}
+    function playMelody(){if(!musicPlaying)return;const notes=[392,392,440,392,523,494,392,392,440,392,587,523,392,392,784,659,523,494,440,698,698,659,523,587,523];let i=0;function note(){if(!musicPlaying)return;if(osc)try{osc.stop()}catch(e){}osc=audioCtx.createOscillator();osc.type='sine';osc.frequency.value=notes[i%notes.length];osc.connect(gain);osc.start();i++;setTimeout(note,260)}note()}
+    
+    // Mobile-friendly flip cards: tap once to open, tap again to close.
+    document.querySelectorAll('.flip').forEach(card=>{
+      card.addEventListener('click',()=>{
+        document.querySelectorAll('.flip').forEach(c=>{ if(c!==card) c.classList.remove('tap') });
+        card.classList.toggle('tap');
+      });
+    });
+
+    document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')goNext();if(e.key==='ArrowLeft')goBack()});
+  </script>
+</body>
+</html>
